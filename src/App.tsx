@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { usePrivy, useWallets } from '@privy-io/react-auth';
-import { useSolanaWallets } from '@privy-io/react-auth/solana';
+import { usePrivy } from '@privy-io/react-auth';
+import { useWallets } from '@privy-io/react-auth/solana';
 import axios from 'axios';
 import { Wallet, Link, ShieldCheck, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,6 @@ declare global {
 
 const App: React.FC = () => {
   const { login, ready, authenticated, user, logout } = usePrivy();
-  const { createWallet } = useSolanaWallets();
   const { wallets } = useWallets();
   
   const [tgData, setTgData] = useState<{ id: string; username: string } | null>(null);
@@ -53,10 +52,14 @@ const App: React.FC = () => {
 
     setLoading(true);
     try {
-      const walletAddress = user?.wallet?.address;
+      // Find the user's Solana wallet. 
+      // We look for the 'embedded' wallet which is the one created by Privy.
+      const solanaWallet = wallets.find((w: any) => w.connectorType === 'embedded') || wallets[0];
+      const walletAddress = solanaWallet?.address;
+
       if (!walletAddress) {
-        setMessage('Creating your secure wallet...');
-        await createWallet();
+        setMessage('Waiting for wallet initialization...');
+        // Embedded wallet should be created automatically based on config
         setLoading(false);
         return;
       }
