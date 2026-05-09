@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Wallet, Link, ShieldCheck, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE_URL = 'http://localhost:8085/api/auth/telegram'; // Update with your actual API URL
+const API_BASE_URL = 'https://seek.kikhaus.com/api/auth/telegram'; // Production API
 
 declare global {
   interface Window {
@@ -23,6 +23,18 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Catch Privy initialization errors
+    const timeout = setTimeout(() => {
+      if (!ready) {
+        setInitError('Privy failed to initialize. Please check your App ID and domain settings.');
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [ready]);
 
   useEffect(() => {
     // Initialize Telegram Web App
@@ -89,6 +101,16 @@ const App: React.FC = () => {
       setLoading(false);
     }
   };
+
+  if (initError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white p-10 text-center">
+        <Zap size={48} className="text-red-500 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Initialization Error</h2>
+        <p className="text-zinc-400 text-sm">{initError}</p>
+      </div>
+    );
+  }
 
   if (!ready) {
     return (

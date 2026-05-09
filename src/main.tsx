@@ -7,7 +7,7 @@ import App from './App';
 import './index.css';
 
 // Privy Configuration (Replace with your actual App ID)
-const PRIVY_APP_ID = 'cm7h0f1g403a4lqex62696is9'; 
+const PRIVY_APP_ID = 'cmoy8gxtk04kw0cjx0r6hivf7'; 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
